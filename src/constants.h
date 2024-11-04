@@ -1,17 +1,16 @@
-#pragma once
-#include "util/sceneid.h"
-
-#define RES "./resources/"
-#define FONT_PATH RES "data/font/Poppins/"
+#ifndef PK_CONSTANTS_H
+#define PK_CONSTANTS_H
+#include "scene/scene_id.h"
 
 
-namespace pk {
+#define SCREEN_W 1280
+#define SCREEN_WF 1280.0f
+#define SCREEN_H 720
+#define SCREEN_HF 720.0f
+#define FPS 60
+#define WINDOW_TITLE "PokemonRpg"
+#define MAIN_SCENE (TitleScreenID)
+#define MAX_ENTITIES 4096
 
-	constexpr float SCREEN_W{ 1280.0f };
-	constexpr float SCREEN_H{ 720.0f };
-	constexpr char WINDOW_TITLE[]{ "PokemonCPP" };
-	constexpr int FPS{ 60 };
 
-	constexpr pk::SceneID MAIN_SCENE{ pk::TitleScreenID };
-
-}
+#endif

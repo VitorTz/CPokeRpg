@@ -1,9 +1,10 @@
-#pragma once
-#include <cstddef>
+#ifndef PK_UTIL_H
+#define PK_UTIL_H
+#include <stddef.h>
 
 
-namespace pk {
 
-	std::size_t hash(const char* fileName);
+size_t hash(const char* s);
 
-}
+
+#endif

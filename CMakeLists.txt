@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.24...3.30)
 project(PokemonCPP)
 
-set(CMAKE_CXX_STANDARD 17)
-
 include(FetchContent)
 
 # Generate compile_commands.json
@@ -22,9 +20,9 @@ FetchContent_MakeAvailable(raylib)
 
 # Our Project
 add_executable(${PROJECT_NAME})
-file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS ./src/*.cpp)
-file(GLOB_RECURSE HEADER_FILES CONFIGURE_DEPENDS ./src/*.hpp)
-target_sources(${PROJECT_NAME} PRIVATE ${SOURCE_FILES} ${HEADER_FILES} "src/constants.h" "src/scene/scene.h" "src/util/sceneid.h" "src/scene/scene_manager.cpp" "src/scene/scene_title_screen.cpp" "src/scene/scene_world.cpp" "src/scene/scene_fire_arena.cpp" "src/scene/scene_plant_arena.cpp" "src/scene/scene_water_arena.cpp" "src/scene/scene_hospital.cpp" "src/scene/scene_house.cpp" "src/util/image.h" "src/util/asset_pool.h" "src/util/fontid.h" "src/util/asset_pool.cpp" "src/util/util.h" "src/util/util.cpp" "src/util/image.cpp")
+file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS ./src/*.c)
+file(GLOB_RECURSE HEADER_FILES CONFIGURE_DEPENDS ./src/*.h)
+target_sources(${PROJECT_NAME} PRIVATE ${SOURCE_FILES} ${HEADER_FILES})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})

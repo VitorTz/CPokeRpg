@@ -1,0 +1,41 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/PokemonCPP.dir/src/ecs/component.c.o"
+  "CMakeFiles/PokemonCPP.dir/src/ecs/component.c.o.d"
+  "CMakeFiles/PokemonCPP.dir/src/ecs/component_array.c.o"
+  "CMakeFiles/PokemonCPP.dir/src/ecs/component_array.c.o.d"
+  "CMakeFiles/PokemonCPP.dir/src/ecs/component_manager.c.o"
+  "CMakeFiles/PokemonCPP.dir/src/ecs/component_manager.c.o.d"
+  "CMakeFiles/PokemonCPP.dir/src/main.c.o"
+  "CMakeFiles/PokemonCPP.dir/src/main.c.o.d"
+  "CMakeFiles/PokemonCPP.dir/src/scene/scene.c.o"
+  "CMakeFiles/PokemonCPP.dir/src/scene/scene.c.o.d"
+  "CMakeFiles/PokemonCPP.dir/src/scene/scene_fire_arena.c.o"
+  "CMakeFiles/PokemonCPP.dir/src/scene/scene_fire_arena.c.o.d"
+  "CMakeFiles/PokemonCPP.dir/src/scene/scene_hospital.c.o"
+  "CMakeFiles/PokemonCPP.dir/src/scene/scene_hospital.c.o.d"
+  "CMakeFiles/PokemonCPP.dir/src/scene/scene_house.c.o"
+  "CMakeFiles/PokemonCPP.dir/src/scene/scene_house.c.o.d"
+  "CMakeFiles/PokemonCPP.dir/src/scene/scene_manager.c.o"
+  "CMakeFiles/PokemonCPP.dir/src/scene/scene_manager.c.o.d"
+  "CMakeFiles/PokemonCPP.dir/src/scene/scene_plant_arena.c.o"
+  "CMakeFiles/PokemonCPP.dir/src/scene/scene_plant_arena.c.o.d"
+  "CMakeFiles/PokemonCPP.dir/src/scene/scene_title_screen.c.o"
+  "CMakeFiles/PokemonCPP.dir/src/scene/scene_title_screen.c.o.d"
+  "CMakeFiles/PokemonCPP.dir/src/scene/scene_water_arena.c.o"
+  "CMakeFiles/PokemonCPP.dir/src/scene/scene_water_arena.c.o.d"
+  "CMakeFiles/PokemonCPP.dir/src/scene/scene_world.c.o"
+  "CMakeFiles/PokemonCPP.dir/src/scene/scene_world.c.o.d"
+  "CMakeFiles/PokemonCPP.dir/src/util/hash_map.c.o"
+  "CMakeFiles/PokemonCPP.dir/src/util/hash_map.c.o.d"
+  "CMakeFiles/PokemonCPP.dir/src/util/util.c.o"
+  "CMakeFiles/PokemonCPP.dir/src/util/util.c.o.d"
+  "CMakeFiles/PokemonCPP.dir/src/util/vector.c.o"
+  "CMakeFiles/PokemonCPP.dir/src/util/vector.c.o.d"
+  "PokemonCPP/PokemonCPP"
+  "PokemonCPP/PokemonCPP.pdb"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang C)
+  include(CMakeFiles/PokemonCPP.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()
