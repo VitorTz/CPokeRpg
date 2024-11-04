@@ -12,13 +12,13 @@ typedef struct vector {
 } vector_t;
 
 
-vector_t* vector_create(size_t t_size, size_t capacity);
+void vector_init(vector_t* v, size_t t_size, size_t capacity);
 
-void vector_destroy(vector_t* v);
+void vector_close(vector_t* v);
 
 void vector_grow(vector_t* v);
 
-iterator_t vector_iterator(vector_t* v);
+iterator_t vector_get_iterator(vector_t* v);
 
 void* vector_allocate(vector_t* v);
 

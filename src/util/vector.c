@@ -4,26 +4,22 @@
 #include <string.h>
 
 
-vector_t* vector_create(const size_t t_size, const size_t capacity) {
-    vector_t* v = malloc(sizeof(vector_t));
+void vector_init(vector_t *v, const size_t t_size, const size_t capacity) {
     v->data = malloc(t_size * capacity);
     v->capacity = capacity;
     v->t_size = t_size;
     v->size = 0;
-    return v;
 }
 
-
-void vector_destroy(vector_t *v) {
+void vector_close(vector_t* v) {
     free(v->data);
-    free(v);
 }
 
 
-iterator_t vector_iterator(vector_t *v) {
+iterator_t vector_get_iterator(vector_t *v) {
     iterator_t i;
     i.begin = v->data;
-    i.end = v->data + v->t_size * v->size;
+    i.end = v->data + v->t_size * (v->size + 1);
     i.step = v->t_size;
     return i;
 }

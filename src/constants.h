@@ -3,6 +3,8 @@
 #include "scene/scene_id.h"
 
 
+#define RES "../../resources/"
+
 #define SCREEN_W 1280
 #define SCREEN_WF 1280.0f
 #define SCREEN_H 720

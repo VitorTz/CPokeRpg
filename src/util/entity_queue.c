@@ -2,27 +2,23 @@
 #include "entity_queue.h"
 #include "types.h"
 #include <stdlib.h>
+#include "../constants.h"
 
 
-entity_queue_t* entity_queue_create() {
-    entity_queue_t* q = malloc(sizeof(entity_queue_t));
-    for (entity_t e = 0; e < MAX_ENTITIES; e++) {
-        q->q[e] = e;
-    }    
-    q->size = 0;
-    q->top = MAX_ENTITIES - 1;
-    return q;
+void entity_queue_init(entity_queue_t *ent_queue) {
+    ent_queue->entities = malloc(sizeof(entity_t) * MAX_ENTITIES);
+    ent_queue->size = 0;
+    ent_queue->top = MAX_ENTITIES - 1;
 }
 
 
-void entity_queue_destroy(entity_queue_t *q) {
-    free(q);
+void entiy_queue_close(entity_queue_t *ent_queue) {
+    free(ent_queue->entities);
 }
-
 
 entity_t entity_queue_pop(entity_queue_t* q) {
     assert(q->size < MAX_ENTITIES);
-    const entity_t e = q->q[q->top];
+    const entity_t e = q->entities[q->top];
     q->top--;
     q->size++;
     return e;
@@ -31,6 +27,6 @@ entity_t entity_queue_pop(entity_queue_t* q) {
 
 void entity_queue_push(entity_queue_t *q, const entity_t e) {
     q->top++;
-    q->q[q->top] = e;
+    q->entities[q->top] = e;
     q->size--;
 }
