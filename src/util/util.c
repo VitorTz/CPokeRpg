@@ -27,43 +27,23 @@ size_t hash_entity_t(const void* e) {
 }
 
 
-void random_file_from_dir(const char* dir, mstring_t* result) {
-    DIR* folder = opendir(dir);    
+int is_prime(const size_t n) {
+    if (n <= 1) return 0;
+    if (n <= 3) return 1;
+    if (n % 2 == 0 || n % 3 == 0) return 0;
 
-    if (!folder) {
-        perror("ERROR: Erro o abrir pasta");
-        return NULL;
+    size_t limit = sqrt(n);
+    for (size_t i = 5; i <= limit; i += 6) {
+        if (n % i == 0 || n % (i + 2) == 0) return 1;
     }
+    return 1;
+}
 
-    struct dirent* entry;
-    int file_count = 0;
-    char* file_names[256];
-    
-    while ((entry = readdir(folder)) != NULL) {
-        if (entry->d_type == DT_REG) {
-            file_names[file_count] = strdup(entry->d_name);
-            file_count++;
-        }
+
+size_t next_prime(const size_t n) {
+    size_t m = n + 1;
+    while (!is_prime(m)) {
+        m++;
     }
-    closedir(folder);
-
-    if (file_count == 0) {
-        printf("Nenhum arquivo encontrado na pasta.\n");
-        return NULL;
-    }
-    
-    srand(time(NULL));
-    int random_index = rand() % file_count;
-    char* chosen_file = strdup(file_names[random_index]);
-    
-    mstring_clear(result);
-    mstring_append(result, dir);
-    mstring_append(result, chosen_file);
-
-    for (int i = 0; i < file_count; i++) {
-        free(file_names[i]);
-    }
-
-    free(chosen_file);
-    return result;
+    return m;
 }

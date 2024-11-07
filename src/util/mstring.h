@@ -1,20 +1,23 @@
 #pragma once
 #include "vector.h"
 
+typedef vector_t string_t;
 
-typedef struct mstring {
-	vector_t arr;	
-} mstring_t;
+void string_init(string_t* str);
+
+void string_close(string_t* str);
+
+void string_append(string_t* str, const char* s);
+
+char string_at(string_t* str, size_t i);
+
+const char* string_get(string_t* str);
+
+void string_clear(string_t* str);
+
+iterator_t string_iterator(string_t* str);
+
+size_t string_lenght(string_t* str);
 
 
-void mstring_init(mstring_t* s);
 
-void mstring_close(mstring_t* s);
-
-const char* mstring_get_str(mstring_t* s);
-
-void mstring_append(mstring_t* s, const char* str);
-
-void mstring_clear(mstring_t* s);
-
-size_t mstring_lenght(mstring_t* s);

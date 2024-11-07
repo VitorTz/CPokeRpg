@@ -1,7 +1,6 @@
 #pragma once
 #include <stdlib.h>
 #include "scene_id.h"
-#include "../util/image.h"
 #include "../util/util.h"
 #include "../constants.h"
 

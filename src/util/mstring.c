@@ -1,40 +1,51 @@
 #include "mstring.h"
 
 
-void mstring_init(mstring_t* s) {
-	vector_init(&s->arr, sizeof(char));
-	vector_reserve(&s->arr, 16);
-	*((char*)vector_allocate(&s->arr)) = '\0';
+static char END_STR = '\0';
+
+
+void string_init(string_t* str) {
+	vector_init(str, sizeof(char));
+	vector_push_back(str, &END_STR);
 }
 
 
-void mstring_close(mstring_t* s) {
-	vector_close(&s->arr);
+void string_close(string_t* str) {
+	vector_close(str);
 }
 
 
-void mstring_append(mstring_t* s, const char* str) {	
-	s->arr.size--;
+void string_append(string_t* str, const char* s) {
 	char c;
-	while ((c = *str++)) {
-		*((char*)vector_allocate(&s->arr)) = c;		
+	str->size--;
+	while ((c = *s++)) {
+		vector_push_back(str, &c);
 	}
-	*((char*)vector_allocate(&s->arr)) = '\0';
+	vector_push_back(str, &END_STR);
 }
 
 
-const char* mstring_get_str(mstring_t* s) {
-	return s->arr.data;
+char string_at(string_t* str, const size_t i) {
+	const char c = *((char*)vector_at(str, i));
+	return c;
 }
 
 
-void mstring_clear(mstring_t* s) {
-	vector_clear(&s->arr);
-	*((char*)vector_allocate(&s->arr)) = '\0';
+const char* string_get(string_t* str) {
+	return str->data;
 }
 
 
-size_t mstring_lenght(mstring_t* s) {
-	return s->arr.size - 1;
+iterator_t string_iterator(string_t* str) {
+	return vector_iterator(str);
 }
 
+
+void string_clear(string_t* str) {
+	vector_close(str);
+}
+
+
+size_t string_lenght(string_t* str) {
+	return str->size - 1;
+}

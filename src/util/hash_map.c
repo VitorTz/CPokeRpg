@@ -2,143 +2,131 @@
 
 
 void hash_map_init(
-	hash_map_t* h,	
+	hash_map_t* h,
 	const size_t v_size,
-	const size_t n_buckets,
-	size_t(*hash_f)(const void*)	
+	size_t(*hash)(const void*)
 ) {
-	h->n_buckets = n_buckets;
-	h->hash_f = hash_f;	
-	h->size = 0;
 	vector_init(&h->buckets, sizeof(vector_t));
-	vector_reserve(&h->buckets, n_buckets);
-	h->buckets.size = n_buckets;
-	iterator_t iter = vector_iterator(&h->buckets);
+	vector_reserve(&h->buckets, 16);
+	h->buckets.size = 16;
+	const iterator_t iter = vector_iterator(&h->buckets);
 	for (vector_t* v = iter.begin; v < iter.end; v++) {
 		vector_init(v, sizeof(size_t) + v_size);
-	}
-}
-
-hash_map_t* hash_map_create(	
-	const size_t v_size,
-	const size_t n_buckets,
-	size_t(*hash_f)(const void*)
-) {
-	hash_map_t* h = (hash_map_t*)malloc(sizeof(hash_map_t));
-	hash_map_init(h, v_size, n_buckets, hash_f);
-	return h;
-}
-
-void hash_map_destroy(hash_map_t* h) {
-	hash_map_close(h);
-	free(h);
+	} 
+	h->hash = hash;
+	h->v_size = v_size;
+	h->size = 0;
 }
 
 
 void hash_map_close(hash_map_t* h) {
-	iterator_t iter = vector_iterator(&h->buckets);
+	const iterator_t iter = vector_iterator(&h->buckets);
 	for (vector_t* v = iter.begin; v < iter.end; v++) {
 		vector_close(v);
 	}
+	vector_close(&h->buckets);
 }
 
 
-hash_map_query_t hash_map_contains(hash_map_t* h, const void* key) {	
-	hash_map_query_t q = { 0, NULL };
-	const size_t k1 = h->hash_f(key);
+void hash_map_reserve(hash_map_t* h, const size_t n) {
+	if (n > h->buckets.size) {
+		const size_t last_n = h->buckets.size;
+		vector_reserve(&h->buckets, n);
+		h->buckets.size = n;
 
-	vector_t* v = (vector_t*)vector_at(&h->buckets, k1 % h->n_buckets);
-	iterator_t iter = vector_iterator(v);
-
-	for (char* p = iter.begin; p < iter.end; p += iter.step) {
-		const size_t* k2 = (size_t*) p;
-		if (*k2 == k1) {
-			q.success = 1;
-			q.data = p + sizeof(size_t);
-			break;
+		const iterator_t iter = vector_iterator(&h->buckets);
+		vector_t* begin = ((vector_t*)iter.begin) + last_n;
+		vector_t* end = (vector_t*)iter.end;
+		for (vector_t* v = begin; v < end; v++) {
+			vector_init(v, sizeof(size_t) + h->v_size);
 		}
 	}
-	return q;
 }
 
 
-hash_map_query_t hash_map_try_insert(hash_map_t* h, const void* key) {
-	hash_map_query_t q = { 1, NULL };
-	const size_t k1 = h->hash_f(key);
-
-	vector_t* v = (vector_t*)vector_at(&h->buckets, k1 % h->n_buckets);
-	const iterator_t iter = vector_iterator(v);
-
+hash_map_query_t hash_map_allocate(hash_map_t* h, const void* key) {
+	hash_map_query_t q = { 0, NULL };
+	const size_t k = h->hash(key);
+	const size_t index = k % h->buckets.size;
+	vector_t* vec = vector_at(&h->buckets, index);
+	const iterator_t iter = vector_iterator(vec);
 	for (char* p = iter.begin; p < iter.end; p += iter.step) {
-		const size_t* k2 = (size_t*)p;
-		if (*k2 == k1) {
-			q.success = 0;
-			q.data = p + sizeof(size_t);
+		if (k == *((size_t*)p)) {
 			return q;
 		}
 	}
-	char* new_pair = (char*) vector_allocate(v);
-	*((size_t*)new_pair) = k1;	
-	q.data = new_pair + sizeof(size_t);
+	q.success = 1;
+	char* new_pair = vector_allocate(vec);
+	*((size_t*)new_pair) = k;
+	q.value = new_pair + sizeof(size_t);
 	h->size++;
 	return q;
 }
 
 
-iterator_t hash_map_iterator(hash_map_t* h) {
-	const iterator_t iter = vector_iterator(&h->buckets);
-	return iter;
-}
-
-
-void* hash_map_insert(hash_map_t* h, const void* key) {
-	const size_t k1 = h->hash_f(key);
-	vector_t* v = (vector_t*)vector_at(&h->buckets, k1 % h->n_buckets);
-	const iterator_t iter = vector_iterator(v);
-
+int hash_map_insert(hash_map_t* h, const void* key, const void* value) {
+	const size_t k = h->hash(key);
+	const size_t index = k % h->buckets.size;
+	vector_t* vec = vector_at(&h->buckets, index);
+	const iterator_t iter = vector_iterator(vec);
 	for (char* p = iter.begin; p < iter.end; p += iter.step) {
-		const size_t* k2 = (size_t*)p;
-		if (*k2 == k1) {
-			return p + sizeof(size_t);
+		if (k == *((size_t*)p)) {
+			return 0;
 		}
 	}
+	char* new_pair = vector_allocate(vec);
+	*((size_t*)new_pair) = k;
+	memcpy(new_pair + sizeof(size_t), value, h->v_size);
 	h->size++;
-	char* new_pair = (char*)vector_allocate(v);
-	*((size_t*)new_pair) = k1;
-	return new_pair + sizeof(size_t);
-}
-
-
-void* hash_map_at(hash_map_t* h, const void* key) {
-	const size_t k1 = h->hash_f(key);
-	vector_t* v = (vector_t*)vector_at(&h->buckets, k1 % h->n_buckets);
-	const iterator_t iter = vector_iterator(v);
-
-	for (char* p = iter.begin; p < iter.end; p += iter.step) {
-		const size_t* k2 = (size_t*)p;
-		if (*k2 == k1) {
-			return p + sizeof(size_t);
-		}
-	}
-	return NULL;
+	return 1;
 }
 
 
 void hash_map_erase(hash_map_t* h, const void* key) {
-	const size_t k1 = h->hash_f(key);
-	vector_t* v = (vector_t*)vector_at(&h->buckets, k1 % h->n_buckets);
-	const iterator_t iter = vector_iterator(v);
-
+	const size_t k = h->hash(key);
+	const size_t index = k % h->buckets.size;
+	vector_t* vec = vector_at(&h->buckets, index);
+	const iterator_t iter = vector_iterator(vec);
 	size_t i = 0;
 	for (char* p = iter.begin; p < iter.end; p += iter.step) {
-		const size_t* k2 = (size_t*)p;
-		if (*k2 == k1) {
-			vector_erase(v, i);
+		if (k == *((size_t*)p)) {
+			vector_erase(vec, i);
 			h->size--;
 			return;
 		}
 		i++;
 	}
+}
+
+
+void* hash_map_at(hash_map_t* h, const void* key) {
+	const size_t k = h->hash(key);
+	const size_t index = k % h->buckets.size;
+	vector_t* vec = vector_at(&h->buckets, index);
+	const iterator_t iter = vector_iterator(vec);
+
+	for (char* p = iter.begin; p < iter.end; p += iter.step)
+		if (k == *((size_t*)p))
+			return p + sizeof(size_t);
+	return NULL;
+}
+
+
+hash_map_query_t hash_map_find(hash_map_t* h, const void* key) {
+	hash_map_query_t q = { 0, NULL };
+	const size_t k = h->hash(key);
+	const size_t index = k % h->buckets.size;
+	vector_t* vec = vector_at(&h->buckets, index);
+	const iterator_t iter = vector_iterator(vec);
+
+	for (char* p = iter.begin; p < iter.end; p += iter.step) {
+		if (k == *((size_t*)p)) {
+			q.success = 1;
+			q.value = p + sizeof(size_t);
+			return q;
+		}
+	}
+	return q;
 }
 
 
