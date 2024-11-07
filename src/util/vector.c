@@ -16,10 +16,10 @@ void vector_close(vector_t* v) {
 
 void vector_reserve(vector_t* v, const size_t n) {
 	if (n > v->capacity) {
-		void* tmp = realloc(v->data, n * v->t_size);
+		void* tmp = realloc(v->data, (n + 1) * v->t_size);
 		if (tmp != NULL) {
 			v->data = tmp;
-			v->capacity = n;
+			v->capacity = n + 1;
 		}
 	}
 }
@@ -123,6 +123,16 @@ void vector_pop_front(vector_t* v, void* r) {
 }
 
 
+void vector_swap(vector_t* v, const size_t a, const size_t b) {
+	// Copy a to last item
+	memcpy(v->data + v->t_size * (v->size + 1), v->data + v->t_size * a, v->t_size);
+	// Copy b to a
+	memcpy(v->data + v->t_size * a, v->data + v->t_size * b, v->t_size);
+	// Copy a to b
+	memcpy(v->data + v->t_size * b, v->data + v->t_size * (v->size + 1), v->t_size);
+}
+
+
 const void* vector_back(vector_t* v) {
 	return v->data + v->t_size * (v->size - 1);	
 }
@@ -130,6 +140,11 @@ const void* vector_back(vector_t* v) {
 
 const void* vector_front(vector_t* v) {
 	return v->data;
+}
+
+
+int vector_is_empty(vector_t* v) {
+	return v->size == 0;
 }
 
 

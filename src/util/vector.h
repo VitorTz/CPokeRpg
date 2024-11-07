@@ -46,8 +46,12 @@ void vector_pop_back(vector_t* v, void* r);
 
 void vector_pop_front(vector_t* v, void* r);
 
+void vector_swap(vector_t* v, size_t a, size_t b);
+
 const void* vector_back(vector_t* v);
 
 const void* vector_front(vector_t* v);
+
+int vector_is_empty(vector_t* v);
 
 size_t vector_size(vector_t* v);

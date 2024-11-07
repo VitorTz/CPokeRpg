@@ -1,14 +1,17 @@
 #pragma once
 #include <stdlib.h>
 #include "scene_id.h"
+#include "../ecs/ecs_manager.h"
+#include "../util/mstring.h"
+#include "../util/image.h"
 #include "../util/util.h"
 #include "../constants.h"
 
-typedef struct scene {
-	scene_id_t id;
-	void (*init)(scene_id_t);
-	void (*update)(scene_id_t, float);
-	void (*draw)(scene_id_t);
+
+typedef struct scene {	
+	void (*init)();
+	void (*update)(float);
+	void (*draw)();
 } scene_t;
 
 

@@ -5,29 +5,32 @@ static char END_STR = '\0';
 
 
 void string_init(string_t* str) {
-	vector_init(str, sizeof(char));
-	vector_push_back(str, &END_STR);
+	str->capacity = 16;
+	str->size = 0;
+	str->data = (char*) malloc(sizeof(char) * str->capacity);
+	str->data = '\0';
 }
 
 
 void string_close(string_t* str) {
-	vector_close(str);
+	free(str->data);	
 }
 
 
 void string_append(string_t* str, const char* s) {
-	char c;
-	str->size--;
-	while ((c = *s++)) {
-		vector_push_back(str, &c);
+	const size_t len = strlen(s);
+	if (str->size + len >= str->capacity) {
+		void* tmp = realloc(str->data, str->size + (len * 2));
+		if (tmp != NULL) {
+			str->data = tmp;
+			str->capacity = str->size + (len * 2);
+		}
 	}
-	vector_push_back(str, &END_STR);
-}
-
-
-char string_at(string_t* str, const size_t i) {
-	const char c = *((char*)vector_at(str, i));
-	return c;
+	char c;	
+	while ((c = *s++)) {
+		*(str->data + str->size++) = c;
+	}
+	*(str->data + str->size) = '\0';
 }
 
 
@@ -36,13 +39,9 @@ const char* string_get(string_t* str) {
 }
 
 
-iterator_t string_iterator(string_t* str) {
-	return vector_iterator(str);
-}
-
-
 void string_clear(string_t* str) {
-	vector_close(str);
+	str->size = 0;
+	str->data = '\0';
 }
 
 

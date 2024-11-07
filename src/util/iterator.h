@@ -7,4 +7,3 @@ typedef struct iterator {
 	void* end;
 	size_t step;
 } iterator_t;
-
