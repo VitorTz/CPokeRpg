@@ -26,6 +26,9 @@ void ecs_instance_close(ecs_instance_t* ecs) {
 }
 
 
+entity_t ecs_instance_entity_create(zindex_t zindex, int add_to_camera);
+
+
 void ecs_instance_add_component(
 	ecs_instance_t* ecs,
 	const entity_t e,

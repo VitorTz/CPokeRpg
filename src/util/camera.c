@@ -1,4 +1,17 @@
 #include "camera.h"
+#include "../ecs/ecs_manager.h"
+
+
+static vector_t vector_aux;
+static vector_t entities_to_draw;
+
+void camera_init_aux_vec() {
+	vector_init(&vector_aux, sizeof(entity_pair_t));
+	vector_reserve(&vector_aux, MAX_ENTITIES);
+	vector_init(&entities_to_draw, sizeof(entity_t));
+	vector_reserve(&entities_to_draw, MAX_ENTITIES);
+	vector_aux.size = MAX_ENTITIES;
+}
 
 
 void camera_init(camera_t* c) {
@@ -31,7 +44,7 @@ void camera_insert(camera_t* c, const entity_t e, const zindex_t zindex) {
 	if (c->is_on_camera[e] == '0') {
 		c->is_on_camera[e] = '1';
 		vector_t* vec = (vector_t*) hash_map_at(&c->zindex_to_entities, &zindex);
-		entity_pair_t pair = { e, 0.0f };
+		entity_pair_t pair = { 0.0f, e };
 		vector_push_back(vec, &pair);		
 		c->size++;
 	}
@@ -71,12 +84,77 @@ void camera_set_target(camera_t* c, const Vector2 target) {
 }
 
 
-void camera_draw(camera_t* c, system_manager_t* system_manager) {
-
+void camera_begin_drawing(camera_t* camera) {
+	BeginMode2D(camera->camera2D);
 }
 
 
-void camera_clear(camera_t* c) {
+void camera_end_drawing() {
+	EndMode2D();
+}
+
+void camera_sort_entities_aux(vector_t* entities, const size_t exp) {		
+	const size_t n = entities->size;
+	size_t count[10] = { 0 };
+
+	// Contagem das ocorrências dos dígitos
+	iterator_t iter = vector_iterator(entities);
+	entity_pair_t* begin = (entity_pair_t*) iter.begin;
+	entity_pair_t* end = (entity_pair_t*) iter.end;
+
+	for (entity_pair_t* pair = begin; pair < end; pair++) {
+		count[(pair->e / exp) % 10]++;
+
+	}	
+
+	// Atualizando count[i] para que ele contenha a posição final de cada dígito
+	for (int i = 1; i < 10; i++) {
+		count[i] += count[i - 1];
+	}
+
+	// Construindo o array de saída	
+	for (entity_pair_t* pair = end - 1; pair >= begin; pair--) {
+		vector_set(
+			&vector_aux,
+			count[(pair->e / exp) % 10] - 1,
+			pair
+		);
+	}
+	
+
+	// Copiando o array de saída para arr[], para que arr[] agora contenha os números ordenados
+	iter = vector_iterator(&vector_aux);
+	size_t i = 0;
+	for (entity_pair_t* pair = iter.begin; pair < iter.end; pair++) {
+		vector_set(entities, i++, pair);
+	}	
+}
+
+void camera_sort_entities(vector_t* entities) {	
+	for (int exp = 1; MAX_ENTITIES / exp > 0; exp *= 10) {
+		camera_sort_entities_aux(entities, exp);
+	}
+}
+
+
+void camera_draw(camera_t* c, system_manager_t* system_manager) {
+	ecs_instance_t* ecs = ecs_manager_get_ecs();
+	camera_begin_drawing(c);
+	for (zindex_t z = CAMERA_MIN_ZINDEX; z <= CAMERA_MAX_ZINDEX; z++) {
+		vector_t* v = (vector_t*) hash_map_at(&c->zindex_to_entities, &z);
+		const iterator_t iter = vector_iterator(v);
+		for (entity_pair_t* pair = iter.begin; pair < iter.end; pair++) {
+			transform_t* t = ecs_instance_get_transform(ecs, pair->e);
+			pair->y_pos = t->pos.y + t->size.y / 2.0f;
+		}
+		camera_sort_entities(v);
+		system_manager_draw(system_manager, v);
+	}
+	camera_end_drawing();
+}
+
+
+void camera_clear(camera_t* c) {	
 	const vec_iterator_t iter = hash_map_get_vec_iterator(&c->zindex_to_entities);
 	for (vector_t* v = iter.begin; v < iter.end; v++) {
 		vector_clear(v);

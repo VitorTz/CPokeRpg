@@ -18,6 +18,10 @@ typedef struct camera {
 
 void camera_init(camera_t* c);
 
+void camera_init_aux_vec(camera_t* c);
+
+void camera_close_aux_vec(camera_t* c);
+
 void camera_close(camera_t* c);
 
 void camera_insert(camera_t* c, entity_t e, zindex_t zindex);
@@ -29,6 +33,14 @@ void camera_add_zoom(camera_t* c, float zoom);
 void camera_set_zoom(camera_t* c, float zoom);
 
 void camera_set_target(camera_t* c, Vector2 target);
+
+void camera_sort_entities_aux(vector_t* entities, const size_t exp);
+
+void camera_sort_entities(vector_t* entities);
+
+void camera_begin_drawing(camera_t* c);
+
+void camera_end_drawing();
 
 void camera_draw(camera_t* c, system_manager_t* system_manager);
 
